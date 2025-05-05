@@ -1,0 +1,15 @@
+[package]
+name = "e001"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+hashbrown = "0.15.3"
+rust_decimal = "1.37.1"
+
+[dev-dependencies]
+criterion = "0.5.1"
+
+[[bench]]
+name = "latency"
+harness = false
