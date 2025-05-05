@@ -30,9 +30,9 @@ impl HybridBook {
 impl OrderBook for HybridBook {
     #[inline]
     fn insert(&mut self, side: Side, price: Decimal, quantity: Decimal) {
-        let (map, tree, top) = match side {
-            Side::Bid => (&mut self.bidmap, &mut self.bids, &mut self.topbid),
-            Side::Ask => (&mut self.askmap, &mut self.asks, &mut self.topask),
+        let map = match side {
+            Side::Bid => &mut self.bidmap,
+            Side::Ask => &mut self.askmap,
         };
 
         if let Some(ptr) = map.get(&price) {
@@ -41,6 +41,11 @@ impl OrderBook for HybridBook {
             }
             return;
         }
+
+        let (tree, top) = match side {
+            Side::Bid => (&mut self.bids, &mut self.topbid),
+            Side::Ask => (&mut self.asks, &mut self.topask),
+        };
 
         let boxed = Box::new(quantity);
         let ptr = NonNull::new(Box::into_raw(boxed)).unwrap();
@@ -64,12 +69,17 @@ impl OrderBook for HybridBook {
 
     #[inline]
     fn delete(&mut self, side: Side, price: Decimal) {
-        let (map, tree, top) = match side {
-            Side::Bid => (&mut self.bidmap, &mut self.bids, &mut self.topbid),
-            Side::Ask => (&mut self.askmap, &mut self.asks, &mut self.topask),
+        let map = match side {
+            Side::Bid => &mut self.bidmap,
+            Side::Ask => &mut self.askmap,
         };
 
         if let Some(ptr) = map.remove(&price) {
+            let (tree, top) = match side {
+                Side::Bid => (&mut self.bids, &mut self.topbid),
+                Side::Ask => (&mut self.asks, &mut self.topask),
+            };
+
             tree.remove(&price);
             unsafe { drop(Box::from_raw(ptr.as_ptr())) };
 
