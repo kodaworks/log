@@ -1,0 +1,23 @@
+[package]
+name = "e002"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = "1.0.219"
+serde_json = "1.0.140"
+rust_decimal = "1.37.1"
+simd-json = "0.15.1"
+sonic-rs = "0.5.1"
+snmalloc-rs = "0.3.8"
+heapless = { version = "0.8.0", features = ["serde"] }
+
+[build]
+rustflags = ["-C", "target-cpu=native"]
+
+[dev-dependencies]
+criterion = "0.6.0"
+
+[[bench]]
+name = "latency"
+harness = false
